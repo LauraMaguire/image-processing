@@ -1,0 +1,20 @@
+# Temporary files
+*.swp
+*~
+# Matlab autosave files
+*.asv
+# Input parameters
+expInfo.m
+
+# Directories
+output/
+
+# Outputs, logs, etc.
+*.avi
+*.mat
+*.txt
+*.log
+*.out
+*.fig
+*.jpg
+*.png

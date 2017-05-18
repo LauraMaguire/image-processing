@@ -48,7 +48,7 @@
 %% USER INPUTS
 
 % Full file path of the video:
-filename = 'Z:\Microscopy\2016\160825\160825_10FSFG04.vsi';
+filename = 'Z:\Microscopy\170516\GelA3_50-50_Hough_1Hour_timingfile_Katie.oex_03.vsi';
 
 % Seconds per frame:
 tscale = 60;
@@ -58,16 +58,16 @@ tscale = 60;
 xscale = 1.58; % for Olympus, 4x
 
 % Date of experiment
-date = '1/30/17';% Olympus';
+date = '5/16/17';% Olympus';
 
 % Short description of hydrogel (keep below 20 characters)
-gelNotes = '8 kD gel-swelling test';
+gelNotes = '50-50 1-8kD linker, 10 mg/mL FSFG';
 
 % Notes, line 1 (keep below 20 characters)
-note1 = '250 kD green dextran';
+note1 = '20 uM NTF2-A488';
 
 % Notes, line 2 (keep below 20 characters)
-note2 = 'mCherry';
+note2 = '20 uM mCherry';
 
 %% PROCESSING BEGINS HERE
 
@@ -169,7 +169,7 @@ plot(time(2:end), inlet(1,(2:end))/inlet(1,2),'g-')
 hold all
 plot(time, inlet(2,:)/inlet(2,1),'r-')
 title(['Inlet intensity (', gelNotes, ')'])
-legend('Alexa488','mCherry','Location','northwest')
+legend('green','red','Location','northwest')
 xlabel('Time (minutes)')
 ylabel('Intensity normalized to initial inlet')
 annotation('textbox', [0.2,0.15,0.1,0.1],'String', {date, note1, note2})
@@ -182,7 +182,7 @@ hold all
 plot(time(2:end), outlet(2,(2:end))./inlet(2,(2:end)),'r-')
 %plot(time, outlet(2,:)/inlet(2,1),'r-')
 title(['Accumulation in outlet (', gelNotes, ')'])
-legend('Alexa488','mCherry','Location','northwest')
+%legend('Alexa488','mCherry','Location','northwest')
 xlabel('Time (minutes)')
 ylabel('Intensity continuously normalized to inlet')
 %ylabel('Intensity normalized to initial inlet')
