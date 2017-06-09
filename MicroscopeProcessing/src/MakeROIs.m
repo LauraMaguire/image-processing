@@ -1,4 +1,4 @@
-function [ roifilename ] = MakeROIs( mydata, roifilename, series )
+function [  ] = MakeROIs( mydata, roifilename, series )
 % This function allows users to create the ROIs described in the
 % video-processing scripts.  It displays a movie frame, allows users to
 % click to create ROIs, and returns a file containing the ROI coordinates.
@@ -100,6 +100,5 @@ switch series
         save(roifilename,'xA1','xA2','yA1','yA2')
 
 end
-
 end
 

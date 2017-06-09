@@ -47,51 +47,41 @@
 
 %% USER INPUTS
 
-% Full file path of the video:
-filename = 'Z:\Microscopy\170516\GelA3_50-50_Hough_1Hour_timingfile_Katie.oex_03.vsi';
+addpath('./src');
+path = 'Z:\Processed Images\2017-05\2017-05-16_50-50mix_linker_250kD_70kD\2017-5-16_2.mat';
+load(path);
 
-% Seconds per frame:
-tscale = 60;
-%tscale1 = 3.8;
-
-% Microns per pixel:
-xscale = 1.58; % for Olympus, 4x
-
-% Date of experiment
-date = '5/16/17';% Olympus';
-
-% Short description of hydrogel (keep below 20 characters)
-gelNotes = '50-50 1-8kD linker, 10 mg/mL FSFG';
-
-% Notes, line 1 (keep below 20 characters)
-note1 = '20 uM NTF2-A488';
-
-% Notes, line 2 (keep below 20 characters)
-note2 = '20 uM mCherry';
-
-%% PROCESSING BEGINS HERE
+% % Full file path of the video:
+% filename = 'Z:\Microscopy\170516\GelA3_50-50_Hough_1Hour_timingfile_Katie.oex_03.vsi';
+% 
+% % Seconds per frame:
+% tscale = 60;
+% %tscale1 = 3.8;
+% 
+% % Microns per pixel:
+% xscale = 1.58; % for Olympus, 4x
+% 
+% % Date of experiment
+% date = '5/16/17';% Olympus';
+% 
+% % Short description of hydrogel (keep below 20 characters)
+% gelNotes = '50-50 1-8kD linker, 10 mg/mL FSFG';
+% 
+% % Notes, line 1 (keep below 20 characters)
+% note1 = '20 uM NTF2-A488';
+% 
+% % Notes, line 2 (keep below 20 characters)
+% note2 = '20 uM mCherry';
 
 %% Import the video.
 
-mydata = bfopen(filename);
-file_size = size(mydata{1,1},1);
-frames = file_size/2; %divide by the number of color channels (2)
-display(['Video has been imported. It has ', num2str(frames), ' frames.'])
+data = bfopen([info.expFolder '\' info.expName]); % load experiment
+info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
+display(['Video has been imported. It has ', num2str(info.frames), ' frames.'])
 
-%% Rotate the outlet video if necessary
-%  Only run this section if the small-outlet chamber was used!
+%%
+roifilename = expROIs([info.expFolder '\' info.expName],data);
 
-for i=1:size(mydata{1,1},1)
-    mydata{1,1}{i,1} = rot90(mydata{1,1}{i,1});
-end
-clear i
-display('Video rotated by 90 degrees.');
-
-%% Use the video to define ROIs.
-close all
-roifilename = strcat(filename(1:end-4),'_rois.mat');
-MakeROIs(mydata, roifilename)
-    
 %% Process the video.
 
 % This section creates the 'output' object that contains the data from each
@@ -101,7 +91,7 @@ MakeROIs(mydata, roifilename)
 % output{3} = kymographs
 % output{4} = not in the channel.
 
-output = BFprocess(mydata, roifilename, file_size);
+output = BFProcess(data, roifilename, info.nChannels*info.frames);
 display('Finished processing video.')
 
 %% Rename output cells.
@@ -118,13 +108,11 @@ kymo_red = reshape(roi3(2,:,:),[size(roi3(2,:,:),2) size(roi3(2,:,:),3)]);
 kymo_green = kymo_green(:,(2:end-1));
 kymo_red = kymo_red(:,(2:end-1));
 
-%% Create scaled time and position axes.
-
-% Create a time axis.
-time =(1:size(output{1}(1,:),2))*tscale/60;
+% Create a time axis (in minutes)
+info.timeAx =(1:size(output{1}(1,:),2))*info.tscale/60;
 
 % Create a position axis.
-pos = (1:size(kymo_red(1,:),2))*xscale;
+info.posAx = (1:size(kymo_red(1,:),2))*info.xscale;
 
 %% PLOTS BEGIN HERE
 % Except in background plot, background is subtracted.
