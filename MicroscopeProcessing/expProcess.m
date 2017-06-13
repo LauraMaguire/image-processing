@@ -1,23 +1,4 @@
-% SINGLE VIDEO PROCESSOR
-% LKM 7/8/15
-
-% This script is a modified version of Loren's and Grant's processing
-% script.  It processes one video and makes plots.
-
-% It is designed for small-outlet chambers, but can be used for X-chambers
-% as well.  For X-chambers, do not run the section that rotates the video
-% by 90 degrees.
-
-% Last modified: 01/04/2016 by LKM
-
-% Inputs:
-%   (1) Full file path
-%   (2) Time per frame
-%   (3) Length scale
-%   (4) Date of experiment
-%   (5) Short gel description
-%   (6) Any other experiment notes
-
+function [ data, plots] = expProcess(path)
 % To define ROIs: Click the image to define vertices of a polygon.
 % Double-click the original vertex to complete the ROI.  The script
 % requires four ROIs.  The order in which they are defined is important.
@@ -31,58 +12,36 @@
 %
 % When all four ROIs have been defined, press 'enter' to accept them.
 
-% Run each section of code separately by pressing 'ctrl+enter'. Script can
-% be run straight through as well.  After running, check plots and change
-% position of legend and text box if necessary.
-
-% There are three sections that can optionally be run, and should not be in
-% some cases.  The second processing section rotates the video by 90
-% degrees and should only be used if the small-outlet chamber was used, not
-% the X-chamber.  Next, the section after the background plot will subtract
-% the background from all other traces, at each times point.  Only run this
-% if the background plot looks reasonable. Finally, there is a section
-% after the profile plots that horizontally flips all profiles. We always
-% want the inlet on the left, so run this section if that is not true at
-% first.
 
 %% USER INPUTS
 
 addpath('./src');
-path = 'Z:\Processed Images\2017-05\2017-05-16_50-50mix_linker_250kD_70kD\2017-5-16_2.mat';
-load(path);
+%path = 'Z:\Processed Images\2017-05\2017-05-16_50-50mix_linker_250kD_70kD\2017-5-16_2.mat';
+load(path, 'info');
 
-% % Full file path of the video:
-% filename = 'Z:\Microscopy\170516\GelA3_50-50_Hough_1Hour_timingfile_Katie.oex_03.vsi';
-% 
-% % Seconds per frame:
-% tscale = 60;
-% %tscale1 = 3.8;
-% 
-% % Microns per pixel:
-% xscale = 1.58; % for Olympus, 4x
-% 
-% % Date of experiment
-% date = '5/16/17';% Olympus';
-% 
-% % Short description of hydrogel (keep below 20 characters)
-% gelNotes = '50-50 1-8kD linker, 10 mg/mL FSFG';
-% 
-% % Notes, line 1 (keep below 20 characters)
-% note1 = '20 uM NTF2-A488';
-% 
-% % Notes, line 2 (keep below 20 characters)
-% note2 = '20 uM mCherry';
 
+%% Adjust file paths based on PC/Mac difference.
+
+if ispc % If this computer is a PC
+    slash = '\'; % use backslashes along path
+    expFolder = info.expFolderPC; % set base path to experiment
+    baseSavePath = info.baseSavePathPC; % set base save path
+else % If this computer is a Mac
+    slash = '/'; % use forward slashes along path
+    expFolder = info.expFolderMac; % set base path to experiment
+    baseSavePath = info.baseSavePathMac; % set base save path
+end
 %% Import the video.
 
-data = bfopen([info.expFolder '\' info.expName]); % load experiment
+disp('Importing experiment...');
+data = bfopen([expFolder slash info.expName]); % load experiment
 info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
-display(['Video has been imported. It has ', num2str(info.frames), ' frames.'])
+display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
 
-%%
+%% Define ROIs.
 roifilename = expROIs([info.expFolder '\' info.expName],data);
 
-%% Process the video.
+%% Process ROIs.
 
 % This section creates the 'output' object that contains the data from each
 % ROI.
@@ -114,13 +73,20 @@ info.timeAx =(1:size(output{1}(1,:),2))*info.tscale/60;
 % Create a position axis.
 info.posAx = (1:size(kymo_red(1,:),2))*info.xscale;
 
-%% PLOTS BEGIN HERE
-% Except in background plot, background is subtracted.
-% Outlet and profile plots are continuously normalized to the inlet.
+%%
+greenConc = info.greenConc;
+redConc = info.redConc;
+greenName = info.greenName;
+redName = info.redName;
+conc = info.conc;
+protein = info.protein;
+geo = info.geo;
+linker = info.linker;
 
-%% PLOTS BEGIN HERE
-% Except in background plot, all intensities are normalized to the inital
-% intensity of the inlet, and background is subtracted.
+%% Define text strings for legends and annotations.
+grnleg = [num2str(greenConc) ' uM ' greenName];
+redleg = [num2str(redConc) ' uM ' redName];
+textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
 
 %% Plot of background intensity vs. time:
 close all
@@ -209,4 +175,6 @@ kymo_red = fliplr(kymo_red);
 %% Clean up workspace (run this before saving workspace)
 clear ans file_size filename mydata roi3 roifilename
 clear final_time grn_lgnd red_lgnd
+
+end
 
