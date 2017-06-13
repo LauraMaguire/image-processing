@@ -88,60 +88,35 @@ grnleg = [num2str(greenConc) ' uM ' greenName];
 redleg = [num2str(redConc) ' uM ' redName];
 textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
 
-%% Plot of background intensity vs. time:
+%% Plot of reservoir intensity vs. time:
 close all
-plot(time, background(1,:),'g-')
+figure('DefaultAxesFontSize',18)
+plot(time, inlet(1,:)/inlet(1,1),'g-','LineWidth',3)
 hold all
-plot(time, background(2,:),'r-')
-title(['Background intensity (', gelNotes, ')'])
-legend('Alexa488','mCherry','Location','southwest')
+plot(time, inlet(2,:)/inlet(2,1),'r-','LineWidth',3)
+title(['Reservoir intensity (' info.date ')'],'Interpreter','None')
+legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
-ylabel('Background intensity')
-annotation('textbox', [0.4,0.2,0.1,0.1],'String', {date, note1, note2})
+ylabel('Intensity')
+annotation('textbox', [0.2,0.15,0.1,0.1],'String', {textnote, 'Normalized to intial reservoir.'})
 
-%% If background intensity looks typical, run this to subtract it from
-%  the other traces. Only run this section once!
+savefig([baseSaveName slash date slash date '--reservoir.fig']);
+saveas(gcf, [baseSaveName slash date slash date '--reservoir.png']);
 
-inlet(1,:) = inlet(1,:) - background(1,:);
-inlet(2,:) = inlet(2,:) - background(2,:);
-
-outlet(1,:) = outlet(1,:) - background(1,:);
-outlet(2,:) = outlet(2,:) - background(2,:);
-
-for i=1:size(kymo_green,2)
-kymo_green(:,i) = kymo_green(:,i) - background(1,:).';
-kymo_red(:,i) = kymo_red(:,i) - background(2,:).';
-end
-clear i
-
-display('Background has been subtracted.');
-
-%% Plot of inlet intensity vs. time:
+%% Plot of accumulation vs. time:
 close all
-figure
-plot(time(2:end), inlet(1,(2:end))/inlet(1,2),'g-')
+figure('DefaultAxesFontSize',18)
+plot(time, outlet(1,:)./inlet(1,:),'g-','LineWidth',3)
 hold all
-plot(time, inlet(2,:)/inlet(2,1),'r-')
-title(['Inlet intensity (', gelNotes, ')'])
-legend('green','red','Location','northwest')
+plot(time, outlet(2,:)./inlet(2,:),'r--','LineWidth',3)
+title(['Accumulation (' info.date ')'],'Interpreter','None')
+legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
-ylabel('Intensity normalized to initial inlet')
-annotation('textbox', [0.2,0.15,0.1,0.1],'String', {date, note1, note2})
+ylabel('Intensity')
+annotation('textbox', [0.3,0.4,0.1,0.1],'String', {textnote,'Intensity continuously normalized to reservoir.'})
 
-%% Plot of outlet intensity vs. time:
-figure
-plot(time(2:end), outlet(1,(2:end))./inlet(1,(2:end)),'g-')
-%plot(time, outlet(1,:)/inlet(1,1),'g-')
-hold all
-plot(time(2:end), outlet(2,(2:end))./inlet(2,(2:end)),'r-')
-%plot(time, outlet(2,:)/inlet(2,1),'r-')
-title(['Accumulation in outlet (', gelNotes, ')'])
-%legend('Alexa488','mCherry','Location','northwest')
-xlabel('Time (minutes)')
-ylabel('Intensity continuously normalized to inlet')
-%ylabel('Intensity normalized to initial inlet')
-annotation('textbox', [0.3,0.4,0.1,0.1],'String', {date, note1, note2})
-
+savefig([baseSaveName slash date slash date '--accumulation.fig']);
+saveas(gcf, [baseSaveName slash date slash date '--accumulation.png']);
 %% Intensity profiles (kymographs):
 % Plot of intensity vs position at several times
 close all
