@@ -39,7 +39,7 @@ info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
 display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
 
 %% Define ROIs.
-roifilename = expROIs([info.expFolder '\' info.expName],data);
+roifilename = expROIs([expFolder '\' info.expName],data);
 
 %% Process ROIs.
 
@@ -49,9 +49,9 @@ roifilename = expROIs([info.expFolder '\' info.expName],data);
 % output{2} = outlet (3rd ROI)
 % output{3} = kymographs
 % output{4} = not in the channel.
-
+disp('Processing ROIs..');
 output = BFProcess(data, roifilename, info.nChannels*info.frames);
-display('Finished processing video.')
+display('Finished processing ROIs.')
 
 %% Rename output cells.
 res = output{1};
@@ -68,10 +68,10 @@ kymo_green = kymo_green(:,(2:end-1));
 kymo_red = kymo_red(:,(2:end-1));
 
 % Create a time axis (in minutes)
-info.timeAx =(1:size(output{1}(1,:),2))*info.tscale/60;
+timeAx =(1:size(output{1}(1,:),2))*info.tScale/60;
 
 % Create a position axis.
-info.posAx = (1:size(kymo_red(1,:),2))*info.xscale;
+posAx = (1:size(kymo_red(1,:),2))*info.xScale;
 
 %%
 greenConc = info.greenConc;
@@ -91,46 +91,46 @@ textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
 %% Plot of reservoir intensity vs. time:
 close all
 figure('DefaultAxesFontSize',18)
-plot(time, res(1,:)/res(1,1),'g-','LineWidth',3)
+plot(timeAx, res(1,:)/res(1,1),'g-','LineWidth',3)
 hold all
-plot(time, res(2,:)/res(2,1),'r-','LineWidth',3)
+plot(timeAx, res(2,:)/res(2,1),'r-','LineWidth',3)
 title(['Reservoir intensity (' info.date ')'],'Interpreter','None')
 legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
 ylabel('Intensity')
-annotation('textbox', [0.2,0.15,0.1,0.1],'String', {textnote, 'Normalized to intial reservoir.'})
+annotation('textbox', [0.15,0.1,0.1,0.1],'String', {textnote, 'Normalized to intial reservoir.'})
 
-savefig([baseSavePath slash date slash date '--reservoir.fig']);
-saveas(gcf, [baseSavePath slash date slash date '--reservoir.png']);
+savefig([baseSavePath slash info.date slash info.date '--reservoir.fig']);
+saveas(gcf, [baseSavePath slash info.date slash info.date '--reservoir.png']);
 
 %% Plot of accumulation vs. time:
 close all
 figure('DefaultAxesFontSize',18)
-plot(time, accum(1,:)./res(1,:),'g-','LineWidth',3)
+plot(timeAx, accum(1,:)./res(1,:),'g-','LineWidth',3)
 hold all
-plot(time, accum(2,:)./res(2,:),'r--','LineWidth',3)
+plot(timeAx, accum(2,:)./res(2,:),'r--','LineWidth',3)
 title(['Accumulation (' info.date ')'],'Interpreter','None')
 legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
 ylabel('Intensity')
-annotation('textbox', [0.3,0.4,0.1,0.1],'String', {textnote,'Intensity continuously normalized to reservoir.'})
+annotation('textbox', [0.4,0.15,0.1,0.1],'String', {textnote,'Intensity continuously normalized to reservoir.'})
 
-savefig([baseSavePath slash date slash date '--accumulation.fig']);
-saveas(gcf, [baseSavePath slash date slash date '--accumulation.png']);
+savefig([baseSavePath slash info.date slash info.date '--accumulation.fig']);
+saveas(gcf, [baseSavePath slash info.date slash info.date '--accumulation.png']);
 %% Intensity profiles (kymographs):
 % Plot of intensity vs position at several times
 close all
 plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
-accept = input('Flip profiles left to right? (y/n) /n','s');
+accept = input('Flip profiles left to right? (y/n) \n','s');
 while strcmp(accept,'y')
     kymo_green = fliplr(kymo_green);
     kymo_red = fliplr(kymo_red);
     plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
-    accept = input('Flip profiles left to right? (y/n) /n','s');
+    accept = input('Flip profiles left to right? (y/n) \n','s');
 end
 
-savefig([baseSavePath slash date slash date '--profiles.fig']);
-saveas(gcf, [baseSavePath slash date slash date '--profiles.png']);
+savefig([baseSavePath slash info.date slash info.date '--profiles.fig']);
+saveas(gcf, [baseSavePath slash info.date slash info.date '--profiles.png']);
 
 %% Save important results in "plots" structure.
 
@@ -146,9 +146,14 @@ plots.grnProfile = kymo_green;
 plots.redProfile = kymo_red;
 plots.date = info.date;
 
-save([baseSavePath slash date slash date '--plots.mat', 'plots']);
+save([baseSavePath slash info.date slash info.date '--plots.mat'], 'plots');
 
-%% Make AVI from experiment
-MakeAVI(data, info, [baseSavePath slash date slash date '.avi']);
+%% Make AVI from experiment.
+close all
+disp('Making AVI file...');
+MakeAVI(data, info, [baseSavePath slash info.date slash info.date '.avi']);
+disp('Finished making AVI file.');
 
+
+disp(['Finished processing experiment. \n Results are saved at ' baseSavePath slash info.date '.']);
 end
