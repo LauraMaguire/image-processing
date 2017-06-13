@@ -1,4 +1,4 @@
-function [  ] = MakeROIs( mydata, roifilename, series )
+function [ ] = MakeROIs( mydata, roifilename, series )
 % This function allows users to create the ROIs described in the
 % video-processing scripts.  It displays a movie frame, allows users to
 % click to create ROIs, and returns a file containing the ROI coordinates.
@@ -51,40 +51,87 @@ switch series
     % user selects the ROIs using the roipoly function.
     case 1 
         % Inlet ROI
+        figure
+        t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+            {'Draw a polygon within the reservoir.', 'Double-click to close the polygon.'});
+        t.BackgroundColor = 'w';
+        t.FontSize = 18;
         [xA1, yA1, BW1, xA2, yA2] = roipoly(composite);
+        close all
+        
+        figure
+        t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+            {'Click and hold to draw a slice through the ',' reservoir, gel, and accumulation area.', 'Release to finalize the rectangle.'});
+        t.BackgroundColor = 'w';
+        t.FontSize = 18;
         % Kymograph ROI
-        [xB1, yB1, BW2, xB2, yB2] = roipoly(composite);
+        imshow(composite);
+        h = imrect;
+        BW2 = createMask(h);
+        close all
+        
+%                 figure
+%         t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+%             {'Draw a rectangular slice through the',' reservoir, gel, and accumulation area.', 'Double-click to close the rectangle.'});
+%         t.BackgroundColor = 'w';
+%         t.FontSize = 18;
+%         % Kymograph ROI
+%         [xB1, yB1, BW2, xB2, yB2] = roipoly(composite);
+%         close all
+        
+        figure
+        t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+            {'Draw a polygon within the accumulation area.', 'Double-click to close the polygon.'});
+        t.BackgroundColor = 'w';
+        t.FontSize = 18;
         % Outlet ROI
         [xC1, yC1, BW3, xC2, yC2] = roipoly(composite);
+        close all
+        
+        figure
+        t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+            {'Draw a polygon for background subtraction.', 'Double-click to close the polygon.'});
+        t.BackgroundColor = 'w';
+        t.FontSize = 18;
         % Background ROI
         [xD1, yD1, BW4, xD2, yD2] = roipoly(composite);
+        close all
     
         % Adjust the kymograph ROI into a rectangle which is square with
         % the image.
-        low = min(xB2(1), xB2(3));
-        high = max(xB2(1), xB2(3));
-        
-        xB2(1) = low;
-        xB2(2) = low;
-        xB2(3) = high;
-        xB2(4) = high;
-        
-        low = min(yB2(1), yB2(3));
-        high = max(yB2(1), yB2(3));
-        
-        yB2(1) = low;
-        yB2(2) = high;
-        yB2(3) = high;
-        yB2(4) = low;
-        
-        BW2 = roipoly(xB1, yB1, composite, xB2, yB2);
+%         low = min(xB2(1), xB2(3));
+%         high = max(xB2(1), xB2(3));
+%         
+%         xB2(1) = low;
+%         xB2(2) = low;
+%         xB2(3) = high;
+%         xB2(4) = high;
+%         
+%         low = min(yB2(1), yB2(3));
+%         high = max(yB2(1), yB2(3));
+%         
+%         yB2(1) = low;
+%         yB2(2) = high;
+%         yB2(3) = high;
+%         yB2(4) = low;
+%         
+%         BW2 = roipoly(xB1, yB1, composite, xB2, yB2);
         
         % Display the image with ROIs overlaid so user can check them.
+        figure
+        t=annotation('textbox', [0.1,0.1,0.1,0.1],'String', ...
+            {'Accept ROIs?', 'Type y or n and hit enter.'});
+        t.BackgroundColor = 'w';
+        t.FontSize = 18;
         imshow(BW1.*finalGreen + BW2.*finalGreen + BW3.*finalGreen + BW4.*finalGreen)
-
+        
         % Save the ROI coordinates.
-        save(roifilename,'xA1','xA2','yA1','yA2', 'xB1','xB2',...
-            'yB1','yB2','xC1','xC2','yC1','yC2', 'xD1', 'yD1','xD2', 'yD2')
+        save(roifilename,'xA1','xA2','yA1','yA2', 'BW2',...
+            'xC1','xC2','yC1','yC2', 'xD1', 'yD1','xD2', 'yD2')
+        
+        % Save the ROI coordinates.
+        %save(roifilename,'xA1','xA2','yA1','yA2', 'xB1','xB2',...
+         %   'yB1','yB2','xC1','xC2','yC1','yC2', 'xD1', 'yD1','xD2', 'yD2')
         
     % Case 2 handles the bulk series. In this case, we only define one ROI.
     

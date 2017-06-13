@@ -13,10 +13,9 @@ function [ data, plots] = expProcess(path)
 % When all four ROIs have been defined, press 'enter' to accept them.
 
 
-%% USER INPUTS
+%% Intialization.
 
 addpath('./src');
-%path = 'Z:\Processed Images\2017-05\2017-05-16_50-50mix_linker_250kD_70kD\2017-5-16_2.mat';
 load(path, 'info');
 
 
@@ -31,6 +30,17 @@ else % If this computer is a Mac
     expFolder = info.expFolderMac; % set base path to experiment
     baseSavePath = info.baseSavePathMac; % set base save path
 end
+
+%% Define useful variables from info structure.
+
+greenConc = info.greenConc;
+redConc = info.redConc;
+greenName = info.greenName;
+redName = info.redName;
+conc = info.conc;
+protein = info.protein;
+geo = info.geo;
+linker = info.linker;
 %% Import the video.
 
 disp('Importing experiment...');
@@ -38,8 +48,14 @@ data = bfopen([expFolder slash info.expName]); % load experiment
 info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
 display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
 
+%% Make AVI from experiment.
+close all
+disp('Making AVI file...');
+MakeAVI(data, info, [baseSavePath slash info.date slash info.date '.avi']);
+disp('Finished making AVI file.');
+
 %% Define ROIs.
-roifilename = expROIs([expFolder '\' info.expName],data);
+roifilename = expROIs([expFolder slash info.expName],data);
 
 %% Process ROIs.
 
@@ -73,17 +89,8 @@ timeAx =(1:size(output{1}(1,:),2))*info.tScale/60;
 % Create a position axis.
 posAx = (1:size(kymo_red(1,:),2))*info.xScale;
 
-%%
-greenConc = info.greenConc;
-redConc = info.redConc;
-greenName = info.greenName;
-redName = info.redName;
-conc = info.conc;
-protein = info.protein;
-geo = info.geo;
-linker = info.linker;
-
 %% Define text strings for legends and annotations.
+
 grnleg = [num2str(greenConc) ' uM ' greenName];
 redleg = [num2str(redConc) ' uM ' redName];
 textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
@@ -122,7 +129,7 @@ saveas(gcf, [baseSavePath slash info.date slash info.date '--accumulation.png'])
 close all
 plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
 accept = input('Flip profiles left to right? (y/n) \n','s');
-while strcmp(accept,'y')
+while strcmp(accept,'y') % flip left to right if needed.
     kymo_green = fliplr(kymo_green);
     kymo_red = fliplr(kymo_red);
     plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
@@ -147,13 +154,7 @@ plots.redProfile = kymo_red;
 plots.date = info.date;
 
 save([baseSavePath slash info.date slash info.date '--plots.mat'], 'plots');
-
-%% Make AVI from experiment.
-close all
-disp('Making AVI file...');
-MakeAVI(data, info, [baseSavePath slash info.date slash info.date '.avi']);
-disp('Finished making AVI file.');
-
-
-disp(['Finished processing experiment. \n Results are saved at ' baseSavePath slash info.date '.']);
+%%
+disp('Finished processing experiment.');
+disp(['Results are saved at ' baseSavePath slash info.date '.']);
 end
