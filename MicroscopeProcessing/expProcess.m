@@ -54,10 +54,10 @@ output = BFProcess(data, roifilename, info.nChannels*info.frames);
 display('Finished processing video.')
 
 %% Rename output cells.
-inlet = output{1};
-outlet = output{2};
+res = output{1};
+accum = output{2};
 roi3 = output{3};
-background = output{4};
+%background = output{4};
 
 % Reshape the third ROI output into concentration profiles.
 kymo_green = reshape(roi3(1,:,:),[size(roi3(1,:,:),2) size(roi3(1,:,:),3)]);
@@ -91,32 +91,32 @@ textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
 %% Plot of reservoir intensity vs. time:
 close all
 figure('DefaultAxesFontSize',18)
-plot(time, inlet(1,:)/inlet(1,1),'g-','LineWidth',3)
+plot(time, res(1,:)/res(1,1),'g-','LineWidth',3)
 hold all
-plot(time, inlet(2,:)/inlet(2,1),'r-','LineWidth',3)
+plot(time, res(2,:)/res(2,1),'r-','LineWidth',3)
 title(['Reservoir intensity (' info.date ')'],'Interpreter','None')
 legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
 ylabel('Intensity')
 annotation('textbox', [0.2,0.15,0.1,0.1],'String', {textnote, 'Normalized to intial reservoir.'})
 
-savefig([baseSaveName slash date slash date '--reservoir.fig']);
-saveas(gcf, [baseSaveName slash date slash date '--reservoir.png']);
+savefig([baseSavePath slash date slash date '--reservoir.fig']);
+saveas(gcf, [baseSavePath slash date slash date '--reservoir.png']);
 
 %% Plot of accumulation vs. time:
 close all
 figure('DefaultAxesFontSize',18)
-plot(time, outlet(1,:)./inlet(1,:),'g-','LineWidth',3)
+plot(time, accum(1,:)./res(1,:),'g-','LineWidth',3)
 hold all
-plot(time, outlet(2,:)./inlet(2,:),'r--','LineWidth',3)
+plot(time, accum(2,:)./res(2,:),'r--','LineWidth',3)
 title(['Accumulation (' info.date ')'],'Interpreter','None')
 legend(grnleg,redleg,'Location','northeast')
 xlabel('Time (minutes)')
 ylabel('Intensity')
 annotation('textbox', [0.3,0.4,0.1,0.1],'String', {textnote,'Intensity continuously normalized to reservoir.'})
 
-savefig([baseSaveName slash date slash date '--accumulation.fig']);
-saveas(gcf, [baseSaveName slash date slash date '--accumulation.png']);
+savefig([baseSavePath slash date slash date '--accumulation.fig']);
+saveas(gcf, [baseSavePath slash date slash date '--accumulation.png']);
 %% Intensity profiles (kymographs):
 % Plot of intensity vs position at several times
 close all
@@ -129,8 +129,26 @@ while strcmp(accept,'y')
     accept = input('Flip profiles left to right? (y/n) /n','s');
 end
 
-savefig([baseSaveName slash date slash date '--profiles.fig']);
-saveas(gcf, [baseSaveName slash date slash date '--profiles.png']);
+savefig([baseSavePath slash date slash date '--profiles.fig']);
+saveas(gcf, [baseSavePath slash date slash date '--profiles.png']);
+
+%% Save important results in "plots" structure.
+
+plots = struct();
+plots.timeAx = timeAx;
+plots.posAx = posAx;
+plots.annotation = textnote;
+plots.grnleg = grnleg;
+plots.redleg = redleg;
+plots.reservoir = res;
+plots.accumulation = accum;
+plots.grnProfile = kymo_green;
+plots.redProfile = kymo_red;
+plots.date = info.date;
+
+save([baseSavePath slash date slash date '--plots.mat', 'plots']);
+
+%% Make AVI from experiment
+MakeAVI(data, info, [baseSavePath slash date slash date '.avi']);
 
 end
-
