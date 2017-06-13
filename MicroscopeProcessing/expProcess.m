@@ -55,7 +55,9 @@ MakeAVI(data, info, [baseSavePath slash info.date slash info.date '.avi']);
 disp('Finished making AVI file.');
 
 %% Define ROIs.
-roifilename = expROIs([expFolder slash info.expName],data);
+
+[roifilename,rotatedData] = expROIs([expFolder slash info.expName],data);
+data = rotatedData;
 
 %% Process ROIs.
 
@@ -130,6 +132,7 @@ close all
 plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
 accept = input('Flip profiles left to right? (y/n) \n','s');
 while strcmp(accept,'y') % flip left to right if needed.
+    close all
     kymo_green = fliplr(kymo_green);
     kymo_red = fliplr(kymo_red);
     plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
