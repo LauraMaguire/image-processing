@@ -120,36 +120,17 @@ saveas(gcf, [baseSaveName slash date slash date '--accumulation.png']);
 %% Intensity profiles (kymographs):
 % Plot of intensity vs position at several times
 close all
-final_time = int16(time(end));
-grn_lgnd = ['Alexa488 ', num2str(final_time), ' min'];
-red_lgnd = ['mCherry ', num2str(final_time), ' min'];
-figure
-plot(pos, kymo_green(2,:)/inlet(1,2),'c-')
-hold all
-plot(pos, kymo_green(end,:)/inlet(1,end),'g-')
-%plot(pos, kymo_green(end,:)/inlet(1,1),'g-')
-plot(pos, kymo_red(2,:)/inlet(2,2), 'm-')
-plot(pos, kymo_red(end,:)/inlet(2,end), 'r-')
-%plot(pos, kymo_red(end,:)/inlet(2,1), 'r-')
-title(['Intensity profiles (', gelNotes, ')'])
-legend('Alexa488 0 min',grn_lgnd, 'mCherry 0 min', ...
-    red_lgnd,'Location','northeast')
-xlabel('Position (microns)')
-ylabel('Intensity continuously normalized to inlet')
-%ylabel('Intensity normalized to initial inlet')
-annotation('textbox', [0.45,0.5,0.1,0.1],'String', {date, note1, note2})
+plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
+accept = input('Flip profiles left to right? (y/n) /n','s');
+while strcmp(accept,'y')
+    kymo_green = fliplr(kymo_green);
+    kymo_red = fliplr(kymo_red);
+    plotProfiles(timeAx,posAx,kymo_green,kymo_red,res,info);
+    accept = input('Flip profiles left to right? (y/n) /n','s');
+end
 
-%% ONLY RUN IF NECESSARY - flip profiles horizontally
-
-% We want the inlet to be on the left-hand side of the plots.  Run this
-% section if necessary.
-
-kymo_green = fliplr(kymo_green);
-kymo_red = fliplr(kymo_red);
-
-%% Clean up workspace (run this before saving workspace)
-clear ans file_size filename mydata roi3 roifilename
-clear final_time grn_lgnd red_lgnd
+savefig([baseSaveName slash date slash date '--profiles.fig']);
+saveas(gcf, [baseSaveName slash date slash date '--profiles.png']);
 
 end
 
