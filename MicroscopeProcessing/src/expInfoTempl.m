@@ -4,11 +4,11 @@
 
 % Deal with path naming differences between Mac and Windows.  I don't know
 % if this will work with Linux.
-info.expFolderPC = 'Z:\Microscopy\170516\';
-info.expFolderMac = '/Volumes/houghgrp/Microscopy/170516/';
+info.expFolderPC = 'Z:\Microscopy\170516';
+info.expFolderMac = '/Volumes/houghgrp/Microscopy/170516';
 
-info.baseSavePathPC = 'Z:\Processed Images\';
-info.baseSavePathMac = '/Volumes/houghgrp/Processed Images/';
+info.baseSavePathPC = 'Z:\Processed Images';
+info.baseSavePathMac = '/Volumes/houghgrp/Processed Images';
 
 if ispc % If this computer is a PC
     slash = '\'; % use backslashes along path
@@ -69,7 +69,7 @@ if strcmp(info.saveFolderOverwrite, '')
 else
     info.saveFolder = info.saveFolderOverwrite;
 end
-fullSavePath = [baseSavePath info.saveFolder];
+fullSavePath = [baseSavePath slash info.saveFolder];
 mkdir(fullSavePath);
 path = [fullSavePath slash info.date '--info.mat'];
 clear expFolder baseSavePath fullSavePath slash
