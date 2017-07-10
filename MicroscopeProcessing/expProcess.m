@@ -46,6 +46,7 @@ linker = info.linker;
 disp('Importing experiment...');
 data = bfopen([expFolder slash info.expName]); % load experiment
 info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
+save(path, 'info'); % overwrite old saved info structure with correct number of frames
 display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
 
 %% Make AVI from experiment.
@@ -95,7 +96,7 @@ posAx = (1:size(kymo_red(1,:),2))*info.xScale;
 
 grnleg = [num2str(greenConc) ' uM ' greenName];
 redleg = [num2str(redConc) ' uM ' redName];
-textnote = [num2str(conc) ' uM ' protein ' ' geo '. Linker: ' linker];
+textnote = [num2str(conc) ' mg/mL ' protein ' ' geo '. Linker: ' linker];
 
 %% Plot of reservoir intensity vs. time:
 close all
