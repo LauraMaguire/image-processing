@@ -27,6 +27,11 @@ ListOfImages = data{1,1};
 GreenImages = ListOfImages(1:2:length(ListOfImages));
 RedImages = ListOfImages(2:2:length(ListOfImages));
 
+% define the contrast scale based on the first frame and carry that scale
+% through the entire movie
+grnScale = stretchlim(im2double(GreenImages{1,1}));
+redScale = stretchlim(im2double(RedImages{1,1}));
+
 % Create the file names the movies will be saved under
 % movPath = [info.baseSavePath '\' info.saveFolder '\' ...
 %     info.date '_movie.avi'];
@@ -43,8 +48,8 @@ open(mov);
 % Loop over all green images, display them, and add them to the movie.
 for i=1:info.frames
     % Convert to from 16-bit image data to double.
-    imageg = imadjust(im2double(GreenImages{1,i}));
-    imager = imadjust(im2double(RedImages{1,i}));
+    imageg = imadjust(im2double(GreenImages{1,i}),grnScale);
+    imager = imadjust(im2double(RedImages{1,i}),redScale);
     imageb = zeros(1024,1344);
     image = cat(3,imager,imageg,imageb);
     % Display the image as a figure.
