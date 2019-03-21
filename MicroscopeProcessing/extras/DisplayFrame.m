@@ -8,7 +8,7 @@
 %% USER INPUT
 
 % Full file path of the video:
-filename = 'Z:\Microscopy\160110\GEL3\FSFG50_NTF2_mCherry_10PEG_no302.vsi';
+filename = '/Volumes/houghgrp/Microscopy/180116_dextranaseTest/snapshot_after_red.vsi';
 
 %% Import the video.
 
@@ -20,7 +20,7 @@ display(['Video has been imported.']);
 % only the second number in the scale object, 
 % i.e. scale = [0; <change this>].
 
-scale = [0; 0.05];
+scale = stretchlim(im2double(mydata{1,1}{1,1}));
 
 image = im2double(mydata{1,1}{1,1});
 image = imadjust(image,scale, [0; 1] );

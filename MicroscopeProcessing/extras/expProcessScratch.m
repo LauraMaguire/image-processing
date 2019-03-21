@@ -1,4 +1,4 @@
-function [data, plots] = expProcess(path)
+function [ data, plots] = expProcess(path)
 % To define ROIs: Click the image to define vertices of a polygon.
 % Double-click the original vertex to complete the ROI.  The script
 % requires four ROIs.  The order in which they are defined is important.
@@ -44,11 +44,63 @@ linker = info.linker;
 %% Import the video.
 
 disp('Importing experiment...');
-data = bfopen([expFolder slash info.expName]); % load experiment
-info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
-% save(path, 'info'); % overwrite old saved info structure with correct number of frames
-% display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
+data = bfopen(['/Volumes/houghgrp/Microscopy/170907/gel2-zstack2.nd2']); % load experiment
+%info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
+%save(path, 'info'); % overwrite old saved info structure with correct number of frames
+%display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
 
+
+%%
+
+% split images into green and red
+ListOfImages = data{1,1};
+GreenImages = ListOfImages(1:2:length(ListOfImages));
+RedImages = ListOfImages(2:2:length(ListOfImages));
+
+% define the contrast scale based on the third fz-position and carry that scale
+% through the entire movie
+grnScale = stretchlim(im2double(GreenImages{1,3}));
+redScale = stretchlim(im2double(RedImages{1,3}));
+
+%%
+windowSize = 100; 
+b = (1/windowSize)*ones(1,windowSize);
+a = 1;
+
+%%
+imshow(im2double(GreenImages{1,3}),grnScale);
+[cx,cy,c,xi,yi] = improfile();
+
+
+%%
+for i=1:10
+%     imageg = imadjust(im2double(GreenImages{1,i}),grnScale);
+%     imager = imadjust(im2double(RedImages{1,i}),redScale);
+    imageg = im2double(GreenImages{1,i});
+    imager = im2double(RedImages{1,i});
+    imageb = zeros(3789,3789);
+    %imageb = zeros(1024,1024);
+    image = cat(3,imager,imageg,imageb);
+    c = improfile(image,xi,yi);
+    g = filter(b,a,squeeze(c(:,:,2)));
+    r = filter(b,a,squeeze(c(:,:,1)));
+    figure
+    hold all
+    plot(r(100:end),'r');
+    plot(g(100:end),'g');
+    temp=['/Volumes/houghgrp/Microscopy/170907/gel2-zstack2/gel2-ztack2_',num2str(i),'.png']; 
+    saveas(gca,temp);
+end
+close all
+
+%%
+
+    imageg = imadjust(im2double(GreenImages{1,5}),grnScale);
+    imager = imadjust(im2double(RedImages{1,5}),redScale);
+    imageb = zeros(3789,3789);
+    %imageb = zeros(1024,1024);
+    image = cat(3,imager,imageg,imageb);
+    imshow(image);
 %% Make AVI from experiment.
 close all
 disp('Making AVI file...');
@@ -159,7 +211,6 @@ plots.date = info.date;
 
 save([baseSavePath slash info.date slash info.date '--plots.mat'], 'plots');
 %%
-close all
 disp('Finished processing experiment.');
 disp(['Results are saved at ' baseSavePath slash info.date '.']);
 end

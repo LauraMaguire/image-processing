@@ -31,8 +31,6 @@
 
 % INPUT: Set which profile is animated and pick the correct position and 
 % time axes.
-kymo = tot;
-kymo2 = tot;
 
 % Make the video writer object that will assemble the movie.
 Mov = VideoWriter('temp.avi');
@@ -42,22 +40,22 @@ Mov.FrameRate = 10;
 
 % Open the video writer before beginning.
 open(Mov);
-
+t=1:101;
 % Loop over all green images, display them, and add them to the movie.
 % i=1:size(kymo2,1)
-for i=1:size(kymo2,1)
+for i=1:length(t)
     % Give the profile a handle so I can delete it later.
-    h1 = plot(pos, kymo(i,:)/inlet(2,i),'r-');
+    h1 = plot(tot(:,i),'r-');
     hold all
-    h3 = plot(pos,kymo2(i,:)/inlet(1,i),'g-');
+    h3 = plot(tot1(:,i),'g--');
     % Make the axes and labels pretty.
     %axis([1 pos(end) -0.01 ceil(max(max(kymo2)))]);
-    axis([1 pos(end) -0.01 1.5]);
+    axis([1 130 -1e-6 20e-5]);
     xlabel('Position (um)');
     ylabel('Intensity (cont. normed. to inlet)');
     % Show current time and frame number as annotation.
     h2 = annotation('textbox', [0.7,0.8,0.1,0.1],'String', ...
-        {['Frame ' num2str(i)], ['Time (hr) ' num2str(time(i),3)]});
+        {['Frame ' num2str(i)], ['Time (hr) ' num2str(t(i),3)]});
     % Make the figure into a movie frame.
     F = getframe;
     % Add the frame to the movie.

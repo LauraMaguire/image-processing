@@ -12,7 +12,6 @@
 %   info: the information structure created using expInfo
 %   savePath: the full file path the movie should be saved to
 
-function [] = MakeAVI(data, info, savePath)
 
 % retreive experiment info
 % load(info);
@@ -23,26 +22,26 @@ function [] = MakeAVI(data, info, savePath)
 % display(['Video has been imported. It has ', num2str(frames), ' frames.'])
 
 % split images into green and red
-ListOfImages = data{1,1};
-if info.nChannels ==2
-    GreenImages = ListOfImages(1:2:length(ListOfImages));
-    RedImages = ListOfImages(2:2:length(ListOfImages));
-elseif info.nChannels ==1
-    GreenImages = ListOfImages(1:1:length(ListOfImages));
-    RedImages = ListOfImages(1:1:length(ListOfImages));
-end
+% ListOfImages = data{1,1};
+% if info.nChannels ==2
+%     GreenImages = ListOfImages(1:2:length(ListOfImages));
+%     RedImages = ListOfImages(2:2:length(ListOfImages));
+% elseif info.nChannels ==1
+%     GreenImages = ListOfImages(1:1:length(ListOfImages));
+%     RedImages = ListOfImages(1:1:length(ListOfImages));
+% end
 
 % define the contrast scale based on the first frame and carry that scale
 % through the entire movie
-grnScale = stretchlim(im2double(GreenImages{1,end}));
-redScale = stretchlim(im2double(RedImages{1,end}));
+%grnScale = stretchlim(im2double(GreenImages{1,1}));
+redScale = stretchlim(im2double(dataCut{1,1}));
 
 % Create the file names the movies will be saved under
 % movPath = [info.baseSavePath '\' info.saveFolder '\' ...
 %     info.date '_movie.avi'];
 
 % Make the video writer object that will assemble the movie.
-mov = VideoWriter(savePath);
+mov = VideoWriter('./');
 
 % Set the frame rate. Always will make a 10-s movie.
 mov.FrameRate = info.frames/10;
@@ -51,10 +50,10 @@ mov.FrameRate = info.frames/10;
 open(mov);
 
 % Loop over all green images, display them, and add them to the movie.
-for i=1:info.frames
+for i=1:112
     % Convert to from 16-bit image data to double.
-    imageg = imadjust(im2double(GreenImages{1,i}),grnScale);
-    imager = imadjust(im2double(RedImages{1,i}),redScale);
+    imager = imadjust(im2double(dataCut{i}),redScale);
+    imageg = zeros(size(imager));
     imageb = zeros(size(imager));
     image = cat(3,imager,imageg,imageb);
     % Display the image as a figure.
@@ -71,4 +70,3 @@ close all
 
 %Close the video writer.
 close(mov);
-end
