@@ -62,7 +62,7 @@ parfor n=1:numTerms
         cosArray(n,a) = sum(sum(integrandCos));
         sinArray(n,a) = sum(sum(integrandSin));
         
-        disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
+        %disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
     end
     disp(['Finished ' num2str(n) ' of ' num2str(numTerms) ' terms.']);
     disp(['Finished Bessel order ' num2str((n-1)-numTerms/2) '.']);
