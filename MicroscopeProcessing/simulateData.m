@@ -10,6 +10,7 @@ r = zeros(size(image));
 theta = zeros(size(image));
 
 recoveryCurve = zeros(1,length(time));
+normalization = 0;
 
 for i = 1:length(x)
     r(i,:) = sqrt(x(i)^2+y.^2);
@@ -54,6 +55,7 @@ jn = zeros(size(image));
             termCos = sum(sum(squeeze(cosine(n,:,:)).*cosArray(n,a).*jn./jnprimeSq(n,a)));
             termSin = sum(sum(squeeze(sine(n,:,:)).*sinArray(n,a).*jn./jnprimeSq(n,a)));
             recoveryCurve = recoveryCurve + (termCos+termSin).*exp(-D.*alpha(n,a).^2.*time);
+            normalization = normalization+ termCos + termSin;
             disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
         end %end a
         disp(['Finished ' num2str(n) ' of ' num2str(numTerms) ' terms.']);
@@ -61,6 +63,6 @@ jn = zeros(size(image));
     end % end n
 %end %end t
 
-
+recoveryCurve = 1-recoveryCurve/normalization;
 toc
 end

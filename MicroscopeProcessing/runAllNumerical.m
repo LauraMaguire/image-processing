@@ -87,3 +87,7 @@ for n=1:length(data)
     figure
     imagesc(data{n}.initialDistribution);
 end
+%%
+for n=1:length(data)
+    [fitString,fitresult,gof] = numericalBesselFit(data{n});
+end
