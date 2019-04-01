@@ -7,7 +7,7 @@ for n=1:length(folders)
     disp(n);
 end
 %%
-for n=1:1%length(folders)
+for n=41%length(folders)
     tic
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
@@ -44,7 +44,7 @@ for n=2:43%length(folders)
     disp(n)
 end
 %%
-for n=1:1%length(data)
+for n=41%length(data)
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
