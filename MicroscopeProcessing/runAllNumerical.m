@@ -26,7 +26,7 @@ for n=41%length(folders)
     toc
 end
 %%
-for n=2:43%length(folders)
+for n=1%length(folders)
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
@@ -36,8 +36,8 @@ for n=2:43%length(folders)
     %image2 = image-ref;
     %imagesc(image2)
     %if exist(['data{' num2str(n) '}.D'])
-    recoveryCurve=simulateData(image,bleachMask,data{n}.cosArray,...
-        data{n}.sinArray,data{n}.rmax,data{n}.time,data{n}.D(1));
+    recoveryCurve=simulateData(image,bleachMask,cosArray2,...
+        sinArray2,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
     data{n}.recoveryCurve = recoveryCurve;
     %end
 
@@ -63,7 +63,7 @@ end
 %%
 r = cell(1,length(data));
 e = cell(1,length(data));
-for n=1:length(data)
+for n=1%:length(data)
     try
     r{n} = data{n}.recoveryCurve - data{n}.recoveryCurve(1);
     r{n} = r{n}/max(r{n});
@@ -84,11 +84,11 @@ for n=1:length(data)
     imagesc(data{n}.initialDistribution);
 end
 %%
-for n=12:43
+for n=1
     [fitString,fitresult,gof] = numericalBesselFit(data{n});
-    data{n}.fitstring = fitString;
-    data{n}.numFit = fitresult;
-    data{n}.numGOF = gof;
+%     data{n}.fitstring = fitString;
+%     data{n}.numFit = fitresult;
+%     data{n}.numGOF = gof;
     disp(n);
 end
 
