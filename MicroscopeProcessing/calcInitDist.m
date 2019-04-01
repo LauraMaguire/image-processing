@@ -64,5 +64,4 @@ for n=1:numTerms
     disp(['Finished Bessel order ' num2str((n-1)-numTerms/2) '.']);
 end
 
-
 end

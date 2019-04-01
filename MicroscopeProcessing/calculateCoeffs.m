@@ -38,7 +38,7 @@ for n=1:numTerms
     sine(n,:,:) = sin(besselOrder.*theta);
 end
 
-parfor n=1:numTerms
+for n=1:numTerms
     besselOrder = (n-1)-floor(numTerms/2);
     
     for a=1:numZeros
