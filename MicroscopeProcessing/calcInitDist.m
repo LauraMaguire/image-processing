@@ -1,5 +1,6 @@
 function [initialDistribution] = calcInitDist(image, mask, cosArray, sinArray)
 
+% set up x and y values with origin at center of image
 x=1.58*(-size(image,1)/2:size(image,1)/2-1);
 y=1.58*(-size(image,2)/2:size(image,2)/2-1);
 
@@ -15,7 +16,6 @@ initialDistribution = zeros(size(image));
 for i = 1:length(x)
     r(i,:) = sqrt(x(i)^2+y.^2);   
     rmax(i) = nnz(mask(i,:));
-    %theta(i,:) = atan(y./x(i));
 end
 
 for i=1:length(x)

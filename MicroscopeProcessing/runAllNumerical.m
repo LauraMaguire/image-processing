@@ -7,7 +7,7 @@ for n=1:length(folders)
     disp(n);
 end
 %%
-for n=1:length(folders)
+for n=1:1%length(folders)
     tic
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
@@ -18,10 +18,10 @@ for n=1:length(folders)
     image2 = image-ref;
     %imagesc(image2)
     
-    [cosArray, sinArray, rmax] = calculateCoeffs(image2, wholeMask, 10, 10);
-    data{n}.cosArray = cosArray;
-    data{n}.sinArray = sinArray;
-    data{n}.rmax = rmax;
+    [cosArray2, sinArray2, rmax2] = calculateCoeffs(image2, wholeMask, 10, 10);
+%     data{n}.cosArray = cosArray;
+%     data{n}.sinArray = sinArray;
+%     data{n}.rmax = rmax;
     disp(n)
     toc
 end
@@ -44,7 +44,7 @@ for n=2:43%length(folders)
     disp(n)
 end
 %%
-for n=1:length(data)
+for n=1:1%length(data)
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
@@ -54,9 +54,9 @@ for n=1:length(data)
     %image2 = image-ref;
     %imagesc(image2)
     
-    [initialDistribution] = calcInitDist(image, wholeMask, data{n}.cosArray, data{n}.sinArray);
+    [initialDistribution2] = calcInitDist(image, wholeMask, cosArray2, sinArray2);
 
-    data{n}.initialDistribution = initialDistribution;
+    %data{n}.initialDistribution = initialDistribution;
     disp(n)
 end
 
@@ -125,12 +125,40 @@ for n=1:51
     
     err(n) = sum(sum((rec-image2).^2));
     
-%     figure
-%     subplot(1,2,1)
-%     imagesc(image2.*wholeMask);
-%     subplot(1,2,2)
-%     imagesc(rec)
+    figure
+    subplot(1,2,1)
+    imagesc(image2.*wholeMask);
+    subplot(1,2,2)
+    imagesc(rec)
 end
 %%
 semilogy(err,'o');
+
+%%
+for n=1:length(data)
+[data{n}.x,data{n}.y] = findCenter(data{n}.gelMask);
+disp([num2str(n) ' ' num2str(data{n}.x) ' ' num2str(data{n}.y)]);
+figure
+imshow(data{n}.gelMask);
+viscircles([data{n}.x,data{n}.y],5);
+end
+
+%%
+for n=1:10
+    N = size(data{n}.greenImage,1);
+    M = size(data{n}.greenImage,2);
+    r = zeros(N,M);
+%     x= 1.58*[-fliplr(1:data{n}.y) 0 1:(N-floor(data{n}.y)-1)];
+%     y= 1.58*[-fliplr(1:data{n}.x) 0 1:(M-floor(data{n}.x)-1)];
+    y= 1.58*[-fliplr(1:data{n}.y) 0 1:(N-floor(data{n}.y)-1)];
+    x= 1.58*[-fliplr(1:data{n}.x) 0 1:(M-floor(data{n}.x)-1)];
+
+    for i = 1:length(y)
+        r(i,:) = sqrt(y(i)^2+x.^2);   
+    end
+    figure
+%     imagesc(r.*data{n}.gelMask)
+    imshow((r.*data{n}.gelMask)/max(max(r)));
+    viscircles([data{n}.x,data{n}.y],5);
+end
 
