@@ -1,11 +1,11 @@
-for n=1:length(folders)
-    disp('loading')
-    r = load(['/Volumes/houghgrp/Processed Images/20' folders{n} '/results.mat']);
-    disp('loaded')
-    data{n}.greenImage = r.GreenImages{2};
-    data{n}.redImage = r.RedImages{2};
-    disp(n);
-end
+% for n=1:length(folders)
+%     disp('loading')
+%     r = load(['/Volumes/houghgrp/Processed Images/20' folders{n} '/results.mat']);
+%     disp('loaded')
+%     data{n}.greenImage = r.GreenImages{2};
+%     data{n}.redImage = r.RedImages{2};
+%     disp(n);
+% end
 %%
 for n=41%length(folders)
     tic
@@ -18,10 +18,10 @@ for n=41%length(folders)
     image2 = image-ref;
     %imagesc(image2)
     
-    [cosArray2, sinArray2, rmax2] = calculateCoeffs(image2, wholeMask, 10, 10);
-%     data{n}.cosArray = cosArray;
-%     data{n}.sinArray = sinArray;
-%     data{n}.rmax = rmax;
+    [cosArray, sinArray, rmax] = calculateCoeffs(image2, wholeMask, 10,10);
+    data{n}.cosArray = cosArray;
+    data{n}.sinArray = sinArray;
+    data{n}.rmax = rmax;
     disp(n)
     toc
 end
@@ -54,7 +54,7 @@ for n=41%length(data)
     %image2 = image-ref;
     %imagesc(image2)
     
-    [initialDistribution2] = calcInitDist(image, wholeMask, cosArray2, sinArray2);
+    [initialDistribution2] = calcInitDist(image, wholeMask, cosArray, sinArray);
 
     %data{n}.initialDistribution = initialDistribution;
     disp(n)

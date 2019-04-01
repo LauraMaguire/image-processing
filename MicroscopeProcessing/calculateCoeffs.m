@@ -46,6 +46,7 @@ theta(size(image,1)/2+1,size(image,2)/2+1) = 0;
 
 % convert gel "diameter" to "radius" using 1.58 um/pixel
 rmax = 1.58*max(rmax)/2;
+gelArea = pi*(1.58^2)*sum(sum(mask));
 
 cosArray = zeros(numTerms,numZeros);
 sinArray = zeros(numTerms,numZeros);
@@ -84,8 +85,8 @@ for n=1:numTerms
 
         % sum the integrand over the whole image to produce
         % (non-normalized) reconstruction coefficients
-        cosArray(n,a) = sum(sum(integrandCos));
-        sinArray(n,a) = sum(sum(integrandSin));
+        cosArray(n,a) = (1/gelArea)*sum(sum(integrandCos));
+        sinArray(n,a) = (1/gelArea)*sum(sum(integrandSin));
         
         %disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
     end
