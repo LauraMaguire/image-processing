@@ -80,8 +80,8 @@ for n=1:numTerms
         % create the integrand by multiplying appropriate terms
 %         integrandCos = mask.*image.*jn.*squeeze(cosine(n,:,:)).*r;
 %         integrandSin = mask.*image.*jn.*squeeze(sine(n,:,:)).*r;
-        integrandCos = mask.*image.*jn.*squeeze(cosine(n,:,:));
-        integrandSin = mask.*image.*jn.*squeeze(sine(n,:,:));
+        integrandCos = (1.58)^2*mask.*image.*jn.*squeeze(cosine(n,:,:));
+        integrandSin = (1.58)^2*mask.*image.*jn.*squeeze(sine(n,:,:));
 
         % sum the integrand over the whole image to produce
         % (non-normalized) reconstruction coefficients

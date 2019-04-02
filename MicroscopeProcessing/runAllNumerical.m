@@ -7,54 +7,38 @@
 %     disp(n);
 % end
 %%
-for n=41%length(folders)
+for n=1%length(folders)
     tic
-    image = double(data{n}.greenImage);
+    image = im2double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
     refMask = wholeMask-bleachMask;
     ref = sum(sum(image.*refMask))/sum(sum(refMask));
     
     image2 = image-ref;
+    %image2 = image2/max(max(image2));
     %imagesc(image2)
     
     [cosArray, sinArray, rmax] = calculateCoeffs(image2, wholeMask, 10,10);
-    data{n}.cosArray = cosArray;
-    data{n}.sinArray = sinArray;
-    data{n}.rmax = rmax;
+%     data{n}.cosArray = cosArray;
+%     data{n}.sinArray = sinArray;
+%     data{n}.rmax = rmax;
     disp(n)
     toc
 end
-%%
-for n=1%length(folders)
-    image = double(data{n}.greenImage);
-    wholeMask = data{n}.gelMask;
-    bleachMask = data{n}.bleachSpot;
-%     refMask = wholeMask-bleachMask;
-%     ref = sum(sum(image.*refMask))/sum(sum(refMask));
-    
-    %image2 = image-ref;
-    %imagesc(image2)
-    %if exist(['data{' num2str(n) '}.D'])
-    recoveryCurve=simulateData(image,bleachMask,cosArray2,...
-        sinArray2,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
-    data{n}.recoveryCurve = recoveryCurve;
-    %end
 
-    disp(n)
-end
 %%
-for n=41%length(data)
-    image = double(data{n}.greenImage);
-    wholeMask = data{n}.gelMask;
-    bleachMask = data{n}.bleachSpot;
+for n=1%length(data)
+    %image = double(data{n}.greenImage);
+    %wholeMask = data{n}.gelMask;
+    %bleachMask = data{n}.bleachSpot;
 %     refMask = wholeMask-bleachMask;
 %     ref = sum(sum(image.*refMask))/sum(sum(refMask));
     
     %image2 = image-ref;
     %imagesc(image2)
     
-    [initialDistribution2] = calcInitDist(image, wholeMask, cosArray, sinArray);
+    [initialDistribution] = calcInitDist(image, wholeMask, cosArray, sinArray);
 
     %data{n}.initialDistribution = initialDistribution;
     disp(n)
@@ -93,7 +77,7 @@ for n=1
 end
 
 %% show all results
-for n=12:43
+for n=1
     test = data{n}.norm(1,:)-data{n}.norm(1,2);
     test = test/test(end);
     test = test(2:end);
@@ -104,17 +88,17 @@ for n=12:43
     hold on
     plot(data{n}.time(2:end),test,'o');
     plot(data{n}.time,rec);
-    str = ['Exp ' num2str(n) ', old D = ' num2str(data{n}.D(1)) ];
-    annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
-    [~,fitresult,~] = numericalBesselFit(data{n}, data{n}.fitstring);
-    str = ['Exp ' num2str(n) ', fit D = ' num2str(fitresult.D) ];
-    annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
-    hold off
+%     str = ['Exp ' num2str(n) ', old D = ' num2str(data{n}.D(1)) ];
+%     annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
+%     [~,fitresult,~] = numericalBesselFit(data{n}, data{n}.fitstring);
+%     str = ['Exp ' num2str(n) ', fit D = ' num2str(fitresult.D) ];
+%     annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
+%     hold off
 end
 
 %%
-for n=1:51
-    rec = data2{n}.initialDistribution/max(max(data2{n}.initialDistribution));
+for n=1
+    rec = data{n}.initialDistributionGrn/max(max(data{n}.initialDistributionGrn));
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
@@ -130,6 +114,29 @@ for n=1:51
     imagesc(image2.*wholeMask);
     subplot(1,2,2)
     imagesc(rec)
+        diff = image2.*wholeMask - rec;
+    figure
+    imagesc(diff)
+end
+%%
+for n=1:51
+    rec = data{n}.initialDistributionRed/max(max(data{n}.initialDistributionRed));
+    image = double(data{n}.redImage);
+    wholeMask = data{n}.gelMask;
+    bleachMask = data{n}.bleachSpot;
+    refMask = wholeMask-bleachMask;
+    ref = sum(sum(image.*refMask))/sum(sum(refMask));
+    image2 = image-ref;
+    image2 = image2/max(max(image2));
+    
+    err(n) = sum(sum((rec-image2).^2));
+    
+    figure
+    subplot(1,2,1)
+    imagesc(image2.*wholeMask);
+    subplot(1,2,2)
+    imagesc(rec)
+
 end
 %%
 semilogy(err,'o');
@@ -138,9 +145,9 @@ semilogy(err,'o');
 for n=1:length(data)
 [data{n}.x,data{n}.y] = findCenter(data{n}.gelMask);
 disp([num2str(n) ' ' num2str(data{n}.x) ' ' num2str(data{n}.y)]);
-figure
-imshow(data{n}.gelMask);
-viscircles([data{n}.x,data{n}.y],5);
+% figure
+% imshow(data{n}.gelMask);
+% viscircles([data{n}.x,data{n}.y],5);
 end
 
 %%
@@ -161,4 +168,77 @@ for n=1:10
     imshow((r.*data{n}.gelMask)/max(max(r)));
     viscircles([data{n}.x,data{n}.y],5);
 end
+
+%% run simulateData
+for n=1%length(folders)
+    image = double(data{n}.greenImage);
+    wholeMask = data{n}.gelMask;
+    bleachMask = data{n}.bleachSpot;
+%     refMask = wholeMask-bleachMask;
+%     ref = sum(sum(image.*refMask))/sum(sum(refMask));
+    
+    %image2 = image-ref;
+    %imagesc(image2)
+    %if exist(['data{' num2str(n) '}.D'])
+    %[normalization,recoveryCurve]=simulateData(image,bleachMask,data{n}.cosArrayGrn,...
+        %data{n}.sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
+    [normalization,recoveryCurve]=simulateData(image,bleachMask,cosArray,...
+        sinArray,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
+    %data{n}.recoveryCurve = recoveryCurve;
+    %end
+
+    disp(n)
+end
+
+%% show all results
+for n=1
+    test = data{n}.norm(1,:)-data{n}.norm(1,2);
+    test = test/test(end);
+    test = test(2:end);
+    rec = data{n}.recoveryCurve-data{n}.recoveryCurve(1);
+    rec = rec/rec(end);
+    
+    figure
+    hold on
+    plot(data{n}.time(2:end),test,'o');
+    plot(data{n}.time,rec);
+    str = ['Exp ' num2str(n) ', old D = ' num2str(data{n}.D(1)) ];
+    annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
+    [fitString,fitresult,~] = numericalBesselFit(data{n});%, data{n}.fitstring);
+    str = ['Exp ' num2str(n) ', fit D = ' num2str(fitresult.D) ];
+    annotation('textbox',[.2 .5 .3 .3],'String',str,'FitBoxToText','on');
+    hold off
+end
+
+%%
+plot(data{39}.time, data{39}.recoveryCurve)
+hold on
+plot(data{39}.time, data{39}.norm(1,:));
+hold off
+
+%%
+image = im2double(data{n}.greenImage);
+    refMask = wholeMask-bleachMask;
+    ref = sum(sum(image.*refMask))/sum(sum(refMask));
+    image2 = image-ref;
+    
+    figure
+    subplot(1,2,1)
+    imagesc(image2.*wholeMask);
+    subplot(1,2,2)
+    imagesc(initialDistribution)
+    %%
+    diff = image2.*wholeMask - data{1}.initialDistributionGrn;
+    imagesc(diff)
+    
+    %%
+    area = sum(sum(data{1}.bleachSpot));
+    plot(recoveryCurve);
+    hold on
+    plot(data{1}.bleachRecovery(1,:)-ref,'o');
+    hold off
+    
+    %%
+
+    
 

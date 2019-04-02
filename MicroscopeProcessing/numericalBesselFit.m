@@ -9,7 +9,7 @@ if nargin==2
     fitString = inputFitString;
 else
     fitString = generateFitString(data.greenImage, data.bleachSpot, ...
-        data.cosArray, data.sinArray, data.rmax);
+        data.cosArray, data.sinArray, data.rmax, data.x, data.y);
 end
 
 [xData, yData] = prepareCurveData( time, y );

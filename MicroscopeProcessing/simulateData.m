@@ -1,4 +1,4 @@
-function [recoveryCurve]=simulateData(image,gelMask,cosArray,sinArray,rmax,time,D,xCenter,yCenter)
+function [normalization,recoveryCurve]=simulateData(image,bleachMask,cosArray,sinArray,rmax,time,D,xCenter,yCenter)
 tic
 % x=1.58*(-size(image,1)/2:size(image,1)/2-1);
 % y=1.58*(-size(image,2)/2:size(image,2)/2-1);
@@ -83,8 +83,8 @@ jn = zeros(size(image));
         for a=1:numZeros
             for i = 1:length(y)
                 for j = 1:length(x)
-                    if gelMask(i,j)
-                        jn(i,j) = real(besselj(besselOrder,alpha(n,a)*r(i,j))); 
+                    if bleachMask(i,j)
+                        jn(i,j) = (besselj(besselOrder,alpha(n,a)*r(i,j))); 
                     end % end if statement
                 end % end j
             end % end i
@@ -99,6 +99,6 @@ jn = zeros(size(image));
     end % end n
 %end %end t
 
-recoveryCurve = 1-recoveryCurve/normalization;
+%recoveryCurve = 1-recoveryCurve/normalization;
 toc
 end
