@@ -1,4 +1,4 @@
-function [recoveryCurve]=simulateData(image,bleachMask,cosArray,sinArray,rmax,time,D,xCenter,yCenter)
+function [recoveryCurve]=simulateDataLargeMask(image,mask,cosArray,sinArray,rmax,time,D,xCenter,yCenter)
 tic
 % x=1.58*(-size(image,1)/2:size(image,1)/2-1);
 % y=1.58*(-size(image,2)/2:size(image,2)/2-1);
@@ -81,15 +81,16 @@ jn = zeros(size(image));
     for n=1:numTerms
         besselOrder = (n-1)-floor(numTerms/2);
         for a=1:numZeros
-            for i = 1:length(y)
-                for j = 1:length(x)
-                    if bleachMask(i,j)
-                        jn(i,j) = (besselj(besselOrder,alpha(n,a)*r(i,j))); 
-                    end % end if statement
-                end % end j
-            end % end i
-            termCos = sum(sum(squeeze(cosine(n,:,:)).*cosArray(n,a).*jn./jnprimeSq(n,a)));
-            termSin = sum(sum(squeeze(sine(n,:,:)).*sinArray(n,a).*jn./jnprimeSq(n,a)));
+            jn = (besselj(besselOrder,alpha(n,a)*r));
+%             for i = 1:length(y)
+%                 for j = 1:length(x)
+%                     if bleachMask(i,j)
+%                         jn(i,j) = (besselj(besselOrder,alpha(n,a)*r(i,j))); 
+%                     end % end if statement
+%                 end % end j
+%             end % end i
+            termCos = sum(sum(mask.*squeeze(cosine(n,:,:)).*cosArray(n,a).*jn./jnprimeSq(n,a)));
+            termSin = sum(sum(mask.*squeeze(sine(n,:,:)).*sinArray(n,a).*jn./jnprimeSq(n,a)));
             recoveryCurve = recoveryCurve + (termCos+termSin).*exp(-D.*alpha(n,a).^2.*time);
             %normalization = normalization+ termCos + termSin;
             disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);

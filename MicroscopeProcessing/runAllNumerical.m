@@ -182,7 +182,7 @@ for n=1%length(folders)
     %if exist(['data{' num2str(n) '}.D'])
     %[normalization,recoveryCurve]=simulateData(image,bleachMask,data{n}.cosArrayGrn,...
         %data{n}.sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
-    [normalization,recoveryCurve]=simulateData(image,bleachMask,cosArray,...
+    [normalization,recoveryCurvew]=simulateData(image,wholeMask,cosArray,...
         sinArray,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
     %data{n}.recoveryCurve = recoveryCurve;
     %end
@@ -233,12 +233,17 @@ image = im2double(data{n}.greenImage);
     
     %%
     area = sum(sum(data{1}.bleachSpot));
-    plot(recoveryCurve);
+    plot(recoveryCurve/area+ref);
     hold on
-    plot(data{1}.bleachRecovery(1,:)-ref,'o');
+    plot(data{1}.bleachRecovery(1,:)/area,'o');
     hold off
     
     %%
-
+plot(recoveryCurvew/area+ref)
+%%
+test = (recoveryCurve/area+ref)./(recoveryCurvew/sum(sum(wholeMask))+ref);
+plot(test);
+hold on
+plot(data{1}.norm(1,:),'o');
     
 
