@@ -119,7 +119,7 @@ for n=1
     imagesc(diff)
 end
 %%
-for n=1:51
+for n=1
     rec = data{n}.initialDistributionRed/max(max(data{n}.initialDistributionRed));
     image = double(data{n}.redImage);
     wholeMask = data{n}.gelMask;
