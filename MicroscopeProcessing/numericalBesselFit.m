@@ -1,8 +1,10 @@
 function [fitString,fitresult, gof] = numericalBesselFit(data, inputFitString)
 
+% time = data.time(2:end);
+% y = data.norm(1,2:end) - data.norm(1,2);
+% y = y/y(end);
 time = data.time(2:end);
-y = data.norm(1,2:end) - data.norm(1,2);
-y = y/y(end);
+y = data.norm(1,2:end);
 
 if nargin==2
     disp('Fit string passed in as argument');
@@ -18,9 +20,12 @@ end
 ft = fittype( fitString, 'independent', 't', 'dependent', 'y' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
-opts.Lower = [0]; % D only
+% opts.Lower = [0]; % D only
+% opts.Upper = [data.D(1)];
+% opts.StartPoint =[data.D(1)]; % D only
+opts.Lower = [0 -Inf -Inf]; % D c1 c2
 %opts.Upper = [data.D(1)];
-opts.StartPoint =[data.D(1)]; % D only
+opts.StartPoint =[data.D(1) 1 0]; % D c1 c2
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
 

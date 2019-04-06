@@ -76,17 +76,34 @@ for n=1:numTerms
     for a=1:numZeros
         % calculate r-dependence
         jn = (besselj(besselOrder,alpha(n,a).*r));
+        jnprimeSq(n,a) = (0.5*real(besselj(besselOrder-1,alpha(n,a)*rmax)...
+                -besselj(besselOrder+1,alpha(n,a)*rmax)))^2;  
        
         % create the integrand by multiplying appropriate terms
 %         integrandCos = mask.*image.*jn.*squeeze(cosine(n,:,:)).*r;
 %         integrandSin = mask.*image.*jn.*squeeze(sine(n,:,:)).*r;
         integrandCos = (1.58)^2*mask.*image.*jn.*squeeze(cosine(n,:,:));
         integrandSin = (1.58)^2*mask.*image.*jn.*squeeze(sine(n,:,:));
+        
+        intNormalCos = (1.58)^2*mask.*(jn).^2.*(squeeze(cosine(n,:,:))).^2;
+        intNormalSin = (1.58)^2*mask.*(jn).^2.*(squeeze(sine(n,:,:))).^2;
 
         % sum the integrand over the whole image to produce
         % (non-normalized) reconstruction coefficients
-        cosArray(n,a) = (1/gelArea)*sum(sum(integrandCos));
-        sinArray(n,a) = (1/gelArea)*sum(sum(integrandSin));
+%         cosArray(n,a) = (1/gelArea)*sum(sum(integrandCos));
+% %         sinArray(n,a) = (1/gelArea)*sum(sum(integrandSin));
+%         normCos(n,a) = sum(sum(intNormalCos))/(jnprimeSq(n,a)*gelArea);
+%         normSin(n,a) = sum(sum(intNormalSin))/(jnprimeSq(n,a)*gelArea);
+
+        
+        normCos(n,a) = sum(sum(intNormalCos))/(jnprimeSq(n,a));
+        normSin(n,a) = sum(sum(intNormalSin))/(jnprimeSq(n,a));
+        
+        cosArray(n,a) = (1/normCos(n,a))*sum(sum(integrandCos));
+        sinArray(n,a) = (1/normSin(n,a))*sum(sum(integrandSin));
+        if isnan(sinArray(n,a))
+            sinArray(n,a) = 0;
+        end
         
         %disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
     end

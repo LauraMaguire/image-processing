@@ -42,8 +42,9 @@ theta(size(image,1)/2+1,size(image,2)/2+1) = 0;
 % r = zeros(size(image));
 % theta = zeros(size(image));
 % 
-fitString = '1-(0';
-normalization = 0;
+%fitString = '1-(0';
+fitString = '(0';
+%normalization = 0;
 % 
 % for i = 1:length(x)
 %     r(i,:) = sqrt(x(i)^2+y.^2);
@@ -82,7 +83,7 @@ jn = zeros(size(image));
             for i = 1:length(y)
                 for j = 1:length(x)
                     if gelMask(i,j)
-                        jn(i,j) = real(besselj(besselOrder,alpha(n,a)*r(i,j))); 
+                        jn(i,j) = (besselj(besselOrder,alpha(n,a)*r(i,j))); 
                     end % end if statement
                 end % end j
             end % end i
@@ -91,12 +92,13 @@ jn = zeros(size(image));
             termTotStrg = num2str(termCos+termSin);
             fitString = [fitString '+(' termTotStrg ')*exp(-D*' ...
                 num2str(alpha(n,a)^2) '*t)'];
-            normalization = normalization + (termCos+termSin);
+            %normalization = normalization + (termCos+termSin);
             disp(['Finished zero number ' num2str(a) ' of ' num2str(numZeros)]);
         end %end a
         disp(['Finished ' num2str(n) ' of ' num2str(numTerms) ' terms.']);
         disp(['Finished Bessel order ' num2str((n-1)-numTerms/2) '.']);
     end % end n
 %end %end t
-fitString = [fitString ')/' num2str(normalization)];
+%fitString = [fitString ')/' num2str(normalization)];
+fitString = [fitString ')'];
 end

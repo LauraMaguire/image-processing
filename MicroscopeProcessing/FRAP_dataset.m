@@ -16,16 +16,16 @@ for n=44:length(folders)
     data{n}.grnScale = stretchlim(im2double(r.GreenImages{1,2}));
     data{n}.redScale = stretchlim(im2double(r.RedImages{1,2}));
     
-    finalGreen = im2double(r.GreenImages{1,end});
-    finalGreen = imadjust(finalGreen,data{n}.grnScale);
+    initGreen = im2double(r.GreenImages{1,end});
+    initGreen = imadjust(initGreen,data{n}.grnScale);
     finalRed = im2double(r.RedImages{1,2});
     finalRed = imadjust(finalRed,data{n}.redScale);
-    composite = imfuse(finalGreen, finalRed, 'falsecolor');
+    composite = imfuse(initGreen, finalRed, 'falsecolor');
     
     %imshow(imadjust(im2double(r.RedImages{1,2}),data{n}.redScale));
-    [~, ~, gelMask, ~, ~] = roipoly(composite);
-    imshow(gelMask);
-    data{n}.gelMask = gelMask;
+    [~, ~, equilMask, ~, ~] = roipoly(composite);
+    imshow(equilMask);
+    data{n}.gelMask = equilMask;
     close all
 
     %imshow(composite)
@@ -54,7 +54,7 @@ for n=44:length(folders)
         data{n}.wholeGel = wholeGel;
     end
     
-    bleachWholeRatio = sum(sum(bleachSpot))/sum(sum(gelMask));
+    bleachWholeRatio = sum(sum(bleachSpot))/sum(sum(equilMask));
     data{n}.norm = (bleachRecovery./wholeGel)/bleachWholeRatio;
     
     totPart = sum(sum(im2double(r.GreenImages{1,1}-214).*data{n}.gelMask));
@@ -77,6 +77,37 @@ end
 
 clear bleachSpot composite finalGreen finalRed n t gelMask bleachRecovery...
     wholeGel bleachWholeRatio resRef areaPart totRes areaRes totPart
+
+%%
+for n=2:length(data)
+    
+    initGreen = im2double(data{n}.greenImage);
+    initGreen = imadjust(initGreen,data{n}.grnScale);
+    
+    initRed = im2double(data{n}.redImage);
+    initRed = imadjust(initRed,data{n}.redScale);
+    imageb = zeros(size(initRed));
+    
+    image = cat(3,initRed,initGreen,imageb);
+    
+    imshow(image);
+    [~, ~, equilMask, ~, ~] = roipoly(image);
+    imshow(equilMask);
+    data{n}.equilMask = equilMask;
+    close all
+    
+    disp(['Finished ' num2str(n) ' of ' num2str(length(data)) '.']);
+end
+
+clear bleachSpot composite finalGreen finalRed n t gelMask bleachRecovery...
+    wholeGel bleachWholeRatio resRef areaPart totRes areaRes totPart
+%%
+for n=1:length(data)
+    data{n}.refGrn = sum(sum(im2double(data{n}.greenImage-214).*data{n}.equilMask))...
+    /sum(sum(equilMask));
+    data{n}.refRed = sum(sum(im2double(data{n}.redImage-219).*data{n}.equilMask))...
+    /sum(sum(equilMask));
+end
 %%
 type = {'ctrl','cct1','ctrl','ctrl','cct1','cct2','ctrl','cct1','cct2',...
     'ctrl','cct1','cct2','ctrl','cct1','cct2','cct1','cct2','ctrl','cct1',...

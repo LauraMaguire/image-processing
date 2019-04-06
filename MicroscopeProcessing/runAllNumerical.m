@@ -7,7 +7,7 @@
 %     disp(n);
 % end
 %%
-for n=1%length(folders)
+for n=39%length(folders)
     tic
     image = im2double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
@@ -19,10 +19,10 @@ for n=1%length(folders)
     %image2 = image2/max(max(image2));
     %imagesc(image2)
     
-    [cosArray, sinArray, rmax] = calculateCoeffs(image2, wholeMask, 10,10);
-%     data{n}.cosArray = cosArray;
-%     data{n}.sinArray = sinArray;
-%     data{n}.rmax = rmax;
+    [normCos, normSin, cosArray, sinArray, rmax] = calculateCoeffs(image2, wholeMask, 20,20);
+    data{n}.cosArrayGrn = cosArray;
+    data{n}.sinArrayGrn = sinArray;
+    data{n}.rmax = rmax;
     disp(n)
     toc
 end
@@ -170,7 +170,7 @@ for n=1:10
 end
 
 %% run simulateData
-for n=1%length(folders)
+for n=39%length(folders)
     image = double(data{n}.greenImage);
     wholeMask = data{n}.gelMask;
     bleachMask = data{n}.bleachSpot;
@@ -182,9 +182,9 @@ for n=1%length(folders)
     %if exist(['data{' num2str(n) '}.D'])
     %[normalization,recoveryCurve]=simulateData(image,bleachMask,data{n}.cosArrayGrn,...
         %data{n}.sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
-    [normalization,recoveryCurvew]=simulateData(image,wholeMask,cosArray,...
+    [recoveryCurve]=simulateData(image, bleachMask,cosArray,...
         sinArray,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
-    %data{n}.recoveryCurve = recoveryCurve;
+    data{n}.recSpotGrn = recoveryCurve;
     %end
 
     disp(n)
@@ -245,5 +245,63 @@ test = (recoveryCurve/area+ref)./(recoveryCurvew/sum(sum(wholeMask))+ref);
 plot(test);
 hold on
 plot(data{1}.norm(1,:),'o');
+
+%%
+for n=1:43
+ image = im2double(data{n}.greenImage);
+    wholeMask = data{n}.gelMask;
+    bleachMask = data{n}.bleachSpot;
+    refMask = wholeMask-bleachMask;
+    ref = sum(sum(image.*refMask))/sum(sum(refMask));
+    
+    image2 = image-ref;
+figure
+test = (data{n}.recSpotGrn/sum(sum(bleachMask))+data{n}.refGrn)./(data{n}.recGelGreen/sum(sum(wholeMask))+data{n}.refGrn);
+plot(data{n}.time,test);
+hold on
+plot(data{n}.time,data{n}.norm(1,:),'o');
+% figure
+end
+%%
+for n=35:43
+ image = im2double(data{n}.redImage);
+    wholeMask = data{n}.gelMask;
+    bleachMask = data{n}.bleachSpot;
+    refMask = wholeMask-bleachMask;
+    ref = sum(sum(image.*refMask))/sum(sum(refMask));
+    
+    image2 = image-ref;
+figure
+test = (data{n}.recSpotRed/sum(sum(bleachMask))+data{n}.refRed)./...
+    (data{n}.recGelRed/sum(sum(wholeMask))+data{n}.refRed);
+expt = data{n}.norm(2,:);
+% offset = test(1)-expt(2);
+% scale = test(1)/expt(1);
+% expt = expt+offset;
+% expt = expt/expt(1);
+x1 = expt(2);
+x2 = expt(1);
+y1 = test(1);
+y2 = 1;
+
+m = (y1-y2)/(x1-x2);
+b = (y1/x1-y2/x2)*(1/x1-1/x2)^(-1);
+
+expt = m*expt+b;
+
+plot(data{n}.time,test);
+hold on
+plot(data{n}.time,expt,'o');
+% figure
+% test = (dataOld{n}.recSpotGrn/sum(sum(bleachMask))+data{n}.refGrn)./(dataOld{n}.recGelGreen/sum(sum(wholeMask))+data{n}.refGrn);
+% plot(data{n}.time,test);
+%hold on
+% plot(data{n}.time,dataOld{n}.norm(1,:),'o');
+end
+%%
+test = data{1}.recGelGreen/sum(sum(wholeMask));
+
+%%
+
     
 
