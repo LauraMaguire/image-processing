@@ -11,75 +11,75 @@ folders = {'19-1-3_1','19-1-3_3','19-1-3_6','19-2-6_1','19-2-6_3',...
 %data = cell(length(folders),1);
 
 %%
-for n=44:length(folders)
-    r = load(['/Volumes/houghgrp/Processed Images/20' folders{n} '/results.mat']);
-    data{n}.grnScale = stretchlim(im2double(r.GreenImages{1,2}));
-    data{n}.redScale = stretchlim(im2double(r.RedImages{1,2}));
-    
-    initGreen = im2double(r.GreenImages{1,end});
-    initGreen = imadjust(initGreen,data{n}.grnScale);
-    finalRed = im2double(r.RedImages{1,2});
-    finalRed = imadjust(finalRed,data{n}.redScale);
-    composite = imfuse(initGreen, finalRed, 'falsecolor');
-    
-    %imshow(imadjust(im2double(r.RedImages{1,2}),data{n}.redScale));
-    [~, ~, equilMask, ~, ~] = roipoly(composite);
-    imshow(equilMask);
-    data{n}.gelMask = equilMask;
-    close all
+for n=1:length(data)
+%     r = load(['/Volumes/houghgrp/Processed Images/20' folders{n} '/results.mat']);
+%     data{n}.grnScale = stretchlim(im2double(r.GreenImages{1,2}));
+%     data{n}.redScale = stretchlim(im2double(r.RedImages{1,2}));
+%     
+%     initGreen = im2double(r.GreenImages{1,end});
+%     initGreen = imadjust(initGreen,data{n}.grnScale);
+%     finalRed = im2double(r.RedImages{1,2});
+%     finalRed = imadjust(finalRed,data{n}.redScale);
+%     composite = imfuse(initGreen, finalRed, 'falsecolor');
+%     
+%     %imshow(imadjust(im2double(r.RedImages{1,2}),data{n}.redScale));
+%     [~, ~, gelMask, ~, ~] = roipoly(composite);
+%     imshow(gelMask);
+%     data{n}.gelMask = gelMask;
+%     close all
+% 
+%     %imshow(composite)
+%     [~, ~, bleachSpot, ~, ~] = roipoly(composite);
+%     imshow(bleachSpot);
+%     data{n}.bleachSpot = bleachSpot;
+%     close all
+%     
+%     %imshow(imadjust(im2double(r.RedImages{1,1}),data{n}.redScale));
+%     [~, ~, resRef, ~, ~] = roipoly(composite);
+%     imshow(resRef);
+%     data{n}.resRef = resRef;
+%     close all
+% 
+%     bleachRecovery = zeros(2,n);
+%     wholeGel = zeros(2,n);
 
-    %imshow(composite)
-    [~, ~, bleachSpot, ~, ~] = roipoly(composite);
-    imshow(bleachSpot);
-    data{n}.bleachSpot = bleachSpot;
-    close all
+%     for t=1:length(r.time)
+%         bleachRecovery(1,t) = sum(sum(im2double(r.GreenImages{1,t}).*data{n}.bleachSpot));
+%         bleachRecovery(2,t) = sum(sum(im2double(r.RedImages{1,t}).*data{n}.bleachSpot));
+% 
+%         wholeGel(1,t) = sum(sum(im2double(r.GreenImages{1,t}).*data{n}.gelMask));
+%         wholeGel(2,t) = sum(sum(im2double(r.RedImages{1,t}).*data{n}.gelMask));
+%         
+%         data{n}.bleachRecovery = bleachRecovery;
+%         data{n}.wholeGel = wholeGel;
+%     end
     
-    %imshow(imadjust(im2double(r.RedImages{1,1}),data{n}.redScale));
-    [~, ~, resRef, ~, ~] = roipoly(composite);
-    imshow(resRef);
-    data{n}.resRef = resRef;
-    close all
-
-    bleachRecovery = zeros(2,n);
-    wholeGel = zeros(2,n);
-
-    for t=1:length(r.time)
-        bleachRecovery(1,t) = sum(sum(im2double(r.GreenImages{1,t}).*data{n}.bleachSpot));
-        bleachRecovery(2,t) = sum(sum(im2double(r.RedImages{1,t}).*data{n}.bleachSpot));
-
-        wholeGel(1,t) = sum(sum(im2double(r.GreenImages{1,t}).*data{n}.gelMask));
-        wholeGel(2,t) = sum(sum(im2double(r.RedImages{1,t}).*data{n}.gelMask));
-        
-        data{n}.bleachRecovery = bleachRecovery;
-        data{n}.wholeGel = wholeGel;
-    end
+%     bleachWholeRatio = sum(sum(bleachSpot))/sum(sum(gelMask));
+%     data{n}.norm = (bleachRecovery./wholeGel)/bleachWholeRatio;
     
-    bleachWholeRatio = sum(sum(bleachSpot))/sum(sum(equilMask));
-    data{n}.norm = (bleachRecovery./wholeGel)/bleachWholeRatio;
-    
-    totPart = sum(sum(im2double(r.GreenImages{1,1}-214).*data{n}.gelMask));
-    totRes = sum(sum(im2double(r.GreenImages{1,1}-214).*data{n}.resRef));
-    areaPart = sum(sum(data{n}.gelMask));
+    totPart = sum(sum(im2double(data{n}.greenImage-214).*data{n}.equilMask));
+    totRes = sum(sum(im2double(data{n}.greenImage-214).*data{n}.resRef));
+    areaPart = sum(sum(data{n}.equilMask));
     areaRes = sum(sum(data{n}.resRef));
-    data{n}.partC(1) = (totPart/areaPart)/(totRes/areaRes);
+    data{n}.partCeq(1) = (totPart/areaPart)/(totRes/areaRes);
     
-    totPart = sum(sum(im2double(r.RedImages{1,1}-219).*data{n}.gelMask));
-    totRes = sum(sum(im2double(r.RedImages{1,1}-219).*data{n}.resRef));
-    areaPart = sum(sum(data{n}.gelMask));
+    totPart = sum(sum(im2double(data{n}.redImage-219).*data{n}.equilMask));
+    totRes = sum(sum(im2double(data{n}.redImage-219).*data{n}.resRef));
+    areaPart = sum(sum(data{n}.equilMask));
     areaRes = sum(sum(data{n}.resRef));
-    data{n}.partC(2) = (totPart/areaPart)/(totRes/areaRes);
+    data{n}.partCeq(2) = (totPart/areaPart)/(totRes/areaRes);
     
-    data{n}.bProb2 = 1-(data{n}.partC(2)/data{n}.partC(1));
-    data{n}.time = r.time;
+    data{n}.bProbeq = 1-(data{n}.partCeq(2)/data{n}.partCeq(1));
+    %data{n}.time = r.time;
     
-    disp(['Finished ' num2str(n) ' of ' num2str(length(folders)) '.']);
+    disp(['Finished ' num2str(n) ' of ' num2str(length(data)) '.']);
 end
 
 clear bleachSpot composite finalGreen finalRed n t gelMask bleachRecovery...
     wholeGel bleachWholeRatio resRef areaPart totRes areaRes totPart
 
 %%
-for n=2:length(data)
+for n=14%1:length(data)
     
     initGreen = im2double(data{n}.greenImage);
     initGreen = imadjust(initGreen,data{n}.grnScale);
@@ -91,9 +91,10 @@ for n=2:length(data)
     image = cat(3,initRed,initGreen,imageb);
     
     imshow(image);
+    figure
     [~, ~, equilMask, ~, ~] = roipoly(image);
     imshow(equilMask);
-    data{n}.equilMask = equilMask;
+    %data{n}.equilMask = equilMask;
     close all
     
     disp(['Finished ' num2str(n) ' of ' num2str(length(data)) '.']);
@@ -205,7 +206,7 @@ clear fitresult gof
 indexCtrl = [];
 indexCct1 = [];
 indexCct2 = [];
-for n=1:length(folders)
+for n=1:43%length(folders)
     if strcmp(data{n}.type,'ctrl')
         indexCtrl = [indexCtrl n];
     elseif strcmp(data{n}.type,'cct1')

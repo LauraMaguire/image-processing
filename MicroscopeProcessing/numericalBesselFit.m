@@ -1,12 +1,12 @@
-function [fitString,fitresult, gof] = numericalBesselFit(data, inputFitString)
+function [fitString,fitresult, gof] = numericalBesselFit(data, inputFitString,v)
 
 % time = data.time(2:end);
 % y = data.norm(1,2:end) - data.norm(1,2);
 % y = y/y(end);
 time = data.time(2:end);
-y = data.norm(1,2:end);
+y = data.norm(v,2:end);
 
-if nargin==2
+if nargin==3
     disp('Fit string passed in as argument');
     fitString = inputFitString;
 else
@@ -25,7 +25,7 @@ opts.Display = 'Off';
 % opts.StartPoint =[data.D(1)]; % D only
 opts.Lower = [0 -Inf -Inf]; % D c1 c2
 %opts.Upper = [data.D(1)];
-opts.StartPoint =[data.D(1) 1 0]; % D c1 c2
+opts.StartPoint =[max(1,data.D(1)) 1 0]; % D c1 c2
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
 
