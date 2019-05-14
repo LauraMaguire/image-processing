@@ -49,11 +49,11 @@ data{n}.KRed2 = ['c1*(' data{n}.fRed2 ')+c2'];
 disp(n);
 end
 %%
-for n=1:5
+for n=[5 7]
 [~,data{n}.numFitGrn2, ~] = numericalBesselFit(data{n}, data{n}.KGrn2,1);
 end
 %%
-for n=1:5
+for n=[5 7]
 [~,data{n}.numFitRed2, ~] = numericalBesselFit(data{n}, data{n}.KRed2,2);
 end
 
@@ -156,3 +156,10 @@ end
 theta(size(image,1)/2+1,size(image,2)/2+1) = 0;
 
 %%
+plot(data{39}.time,data{39}.recSpotGrn)
+figure
+plot(data{39}.time,data{39}.recGelGreen/sum(sum(data{39}.gelMask))+data{39}.refGrn)
+figure
+plot(data{39}.time,data{39}.recSpotRed)
+figure
+plot(data{39}.time,data{39}.recGelRed)

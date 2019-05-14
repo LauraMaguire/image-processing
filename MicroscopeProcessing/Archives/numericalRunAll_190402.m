@@ -32,26 +32,26 @@ for n=[39]%length(folders)
 %     initialDistribution = calcInitDist(image, wholeMask, cosArrayRed, sinArrayRed);
 %     data{n}.IDRed = initialDistribution;
 %     disp(['Finished red init. dist., ' num2str(n) ' of 43']);
-
+% 
     cosArrayRed=data{n}.cosArrayRed;
     sinArrayRed=data{n}.sinArrayRed;
     cosArrayGrn=data{n}.cosArrayGrn;
     sinArrayGrn=data{n}.sinArrayGrn;
     
-    data{n}.recSpotGrn=simulateData(image,bleachMask,data{n}.cosArrayGrn,...
-        data{n}.sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
-    disp(['Finished green reconstructed spot total, ' num2str(n) ' of 43']);
+%     data{n}.recSpotGrn=simulateData(image,bleachMask,data{n}.cosArrayGrn,...
+%         data{n}.sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.numFitGrn.D,data{n}.x,data{n}.y);
+%     disp(['Finished green reconstructed spot total, ' num2str(n) ' of 43']);
     
     data{n}.recGelGreen=simulateDataLargeMask(image,wholeMask,cosArrayGrn,...
-        sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
+        sinArrayGrn,data{n}.rmax,data{n}.time,data{n}.numFitGrn.D,data{n}.x,data{n}.y);
     disp(['Finished green reconstructed gel total, ' num2str(n) ' of 43']);
     
     data{n}.recSpotRed=simulateData(image,bleachMask,data{n}.cosArrayRed,...
-        data{n}.sinArrayRed,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
+        data{n}.sinArrayRed,data{n}.rmax,data{n}.time,data{n}.numFitRed.D,data{n}.x,data{n}.y);
     disp(['Finished red reconstructed spot total, ' num2str(n) ' of 43']);
     
     data{n}.recGelRed=simulateDataLargeMask(image,wholeMask,cosArrayRed,...
-        sinArrayRed,data{n}.rmax,data{n}.time,data{n}.D(1),data{n}.x,data{n}.y);
+        sinArrayRed,data{n}.rmax,data{n}.time,data{n}.numFitRed.D,data{n}.x,data{n}.y);
     disp(['Finished red reconstructed gel total, ' num2str(n) ' of 43']);
     
 end
