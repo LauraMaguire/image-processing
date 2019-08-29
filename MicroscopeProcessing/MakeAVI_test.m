@@ -12,24 +12,25 @@
 %   info: the information structure created using expInfo
 %   savePath: the full file path the movie should be saved to
 
-function [] = MakeAVI_test(info, savePath)
-
+function [] = MakeAVI_test()
+%function [] = MakeAVI_test(info, savePath)
 % retreive experiment info
 %load(info);
 
 % import the experiment
-data = bfopen('/Volumes/houghgrp/Microscopy/180306/180306-dexTest_3.vsi');
-frames = info.frames;
-disp(['Video has been imported. It has ', num2str(frames), ' frames.'])
+data = bfopen('/Volumes/houghgrp/Microscopy/2016/160816/160816_multiplePos_laserWritten/160816_semicircles.vsi');
+%frames = info.frames;
+%disp(['Video has been imported. It has ', num2str(frames), ' frames.'])
 
 % split images into green and red
 ListOfImages = data{1,1};
-%GreenImages = ListOfImages(1:2:length(ListOfImages));
+GreenImages = ListOfImages(1:2:length(ListOfImages));
 RedImages = ListOfImages(2:2:length(ListOfImages));
+info.frames = length(RedImages);
 
 % define the contrast scale based on the first frame and carry that scale
 % through the entire movie
-%grnScale = stretchlim(im2double(ListOfImages{1,1}));
+grnScale = stretchlim(im2double(GreenImages{1,1}));
 redScale = stretchlim(im2double(RedImages{1,1}));
 
 % Create the file names the movies will be saved under
@@ -37,7 +38,8 @@ redScale = stretchlim(im2double(RedImages{1,1}));
 %     info.date '_movie.avi'];
 
 % Make the video writer object that will assemble the movie.
-mov = VideoWriter(savePath);
+%mov = VideoWriter(savePath);
+mov = VideoWriter('test');
 
 % Set the frame rate. Always will make a 10-s movie.
 mov.FrameRate = info.frames/10;
@@ -48,10 +50,10 @@ open(mov);
 % Loop over all green images, display them, and add them to the movie.
 for i=1:info.frames
     % Convert to from 16-bit image data to double.
-    %imageg = imadjust(im2double(ListOfImages{i,1}),grnScale);
-    imager = imadjust(im2double(RedImages{1,i}),redScale);
-    %imageb = zeros(size(imager));
-    image = imager;
+    imageg = imadjust(im2double(GreenImages{i}),grnScale);
+    imager = imadjust(im2double(RedImages{i}),redScale);
+    imageb = zeros(size(imager));
+    image = cat(3,imager,imageg,imageb);
     % Display the image as a figure.
     imshow(image, 'InitialMagnification',50);
     % Make the figure a movie frame. ('gcf' means 'get current figure')

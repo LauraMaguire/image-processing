@@ -45,6 +45,8 @@ linker = info.linker;
 
 disp('Importing experiment...');
 data = bfopen([expFolder slash info.expName]); % load experiment
+%data = bfopen('/Volumes/houghgrp/Microscopy/190221_FRAP/190221_FRAP_26.vsi'); % load experiment
+%data{1,1} = vertcat(data{1,1},data{1,1});
 info.frames = size(data{1,1},1)/info.nChannels; % verify number of frames
 % save(path, 'info'); % overwrite old saved info structure with correct number of frames
 % display(['Experiment has been imported. It has ', num2str(info.frames), ' frames.'])
